@@ -1,0 +1,72 @@
+<html lang="no">
+<head></head>
+<body style="font-family: Consolas, serif; font-size: 40px; background-color: #fff6bd; color: #9E9E9E">
+  <div id="content">
+    <span id="current-line"></span>
+    <span id="lines"></span>
+  </div>
+
+  <script>
+    const currentLine = document.getElementById("current-line");
+    const linesElem = document.getElementById("lines");
+
+    let line = "";
+
+    const lines = JSON.parse(localStorage.getItem("lines") ?? "[]")
+
+    let last_timestamp = Infinity;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      const div = document.createElement("div");
+      const span = document.createElement("span");
+      span.innerText = line.text;
+      div.appendChild(span);
+      const timestamp = document.createElement("span");
+      const date = new Date(line.timestamp)
+
+      if (last_timestamp - date > 1000 * 60 * 30) {
+          timestamp.innerText = date.toLocaleTimeString() + " " + date.toLocaleDateString();
+          timestamp.style.alignContent = "center";
+          timestamp.style.fontSize = "20px";
+          timestamp.style.opacity = "0.3";
+      }
+      last_timestamp = line.timestamp;
+      div.appendChild(timestamp);
+      div.style.display = "flex";
+      div.style.justifyContent = "space-between";
+      linesElem.appendChild(div);
+    }
+
+    const content = document.getElementById("content").innerText;
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Backspace") {
+        line = line.slice(0, -1);
+        currentLine.innerText = line + "|";
+      }
+      if (e.key === "Space") {
+        line += " ";
+        currentLine.innerText = line + "|";
+        e.preventDefault();
+      }
+    }, false);
+
+    document.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+          const div = document.createElement("div");
+          div.innerText = line.substring(0, line.length);
+          linesElem.insertBefore(div, linesElem.firstChild);
+          line = "";
+          lines.push({ text: div.innerText, timestamp: +new Date() });
+          localStorage.setItem("lines", JSON.stringify(lines));
+      } else {
+          line += e.key;
+      }
+      currentLine.innerText = line + "|";
+      if (e.key === "Space") {
+          e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
