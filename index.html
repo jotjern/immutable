@@ -44,7 +44,7 @@
         line = line.slice(0, -1);
         currentLine.innerText = line + "|";
       }
-      if (e.key === "Space") {
+      if (e.key === " ") {
         line += " ";
         currentLine.innerText = line + "|";
         e.preventDefault();
@@ -63,9 +63,6 @@
           line += e.key;
       }
       currentLine.innerText = line + "|";
-      if (e.key === "Space") {
-          e.preventDefault();
-      }
     });
   </script>
 </body>
